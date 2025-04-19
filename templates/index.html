@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>URL Shortener</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px 0;
+      width: 300px;
+    }
+    .response {
+      margin-top: 20px;
+      white-space: pre-wrap;
+      background: #f4f4f4;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Shorten a URL</h2>
+  <input type="text" id="url" placeholder="Enter a URL">
+  <button onclick="shorten()">Shorten</button>
+
+  <h2>Get Original URL</h2>
+  <input type="text" id="code-get" placeholder="Enter short code">
+  <button onclick="getUrl()">Get URL</button>
+
+  <h2>Update a URL</h2>
+  <input type="text" id="code-update" placeholder="Enter short code">
+  <input type="text" id="new-url" placeholder="Enter new URL">
+  <button onclick="updateUrl()">Update</button>
+
+  <h2>Delete a Short URL</h2>
+  <input type="text" id="code-delete" placeholder="Enter short code">
+  <button onclick="deleteUrl()">Delete</button>
+
+  <h2>Get Stats</h2>
+  <input type="text" id="code-stats" placeholder="Enter short code">
+  <button onclick="getStats()">Stats</button>
+
+  <div class="response" id="responseBox"></div>
+
+  <script>
+    const api = "http://127.0.0.1:5000";
+
+    function display(res) {
+      document.getElementById("responseBox").innerText = JSON.stringify(res, null, 2);
+    }
+
+    async function shorten() {
+      const url = document.getElementById("url").value;
+      const res = await fetch(`${api}/shorten`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url })
+      });
+      const data = await res.json();
+      display(data);
+    }
+
+    async function getUrl() {
+      const code = document.getElementById("code-get").value;
+      const res = await fetch(`${api}/shorten/${code}`);
+      const data = await res.json();
+      display(data);
+    }
+
+    async function updateUrl() {
+      const code = document.getElementById("code-update").value;
+      const newUrl = document.getElementById("new-url").value;
+      const res = await fetch(`${api}/shorten/${code}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: newUrl })
+      });
+      const data = await res.json();
+      display(data);
+    }
+
+    async function deleteUrl() {
+      const code = document.getElementById("code-delete").value;
+      const res = await fetch(`${api}/shorten/${code}`, { method: "DELETE" });
+      display({ status: res.status, message: res.status === 204 ? "Deleted" : "Failed" });
+    }
+
+    async function getStats() {
+      const code = document.getElementById("code-stats").value;
+      const res = await fetch(`${api}/stats/${code}`);
+      const data = await res.json();
+      display(data);
+    }
+  </script>
+
+</body>
+</html>
