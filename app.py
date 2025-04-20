@@ -5,7 +5,6 @@ from datetime import datetime
 from models import db, URL
 from utils import generate_short_code
 
-# comment 1 for commit
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
